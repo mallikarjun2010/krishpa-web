@@ -1,4 +1,3 @@
-
 import Layout from "@/components/Layout";
 import ProductCard from "@/components/ProductCard";
 import products from "@/data/products";
@@ -14,7 +13,12 @@ const Shop = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const location = useLocation();
   const navigate = useNavigate();
-  
+
+  // Scroll to top when Shop page mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const categoryParam = params.get("category");
@@ -22,7 +26,7 @@ const Shop = () => {
       setCategoryFilter(categoryParam);
     }
   }, [location]);
-  
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -78,6 +82,7 @@ const Shop = () => {
                   <SelectItem value="veg">Vegetarian</SelectItem>
                   <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
                   <SelectItem value="combo">Combo Packs</SelectItem>
+                  <SelectItem value="spices">Spices</SelectItem>
                 </SelectContent>
               </Select>
             </div>

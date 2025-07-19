@@ -29,12 +29,38 @@ const Cart = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"upi" | "bank" | "razorpay" | null>("upi");
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [razorpayOrderData, setRazorpayOrderData] = useState<any>(null);
-  
+  const [selectedFreeSample, setSelectedFreeSample] = useState<string | null>(null);
+
+  // Constants
+  const FREE_SHIPPING_THRESHOLD = 940;
+  const SAMPLE_PICKLE_OPTIONS = [
+    "Mango Pickle",
+    "Lemon Pickle",
+    "Garlic Pickle",
+    "Mixed Vegetable Pickle",
+    "Red Chili Pickle"
+  ];
+
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const calculateRemainingForFreeShipping = () => {
+    const subtotal = calculateSubtotal();
+    return Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  };
+
+  const calculateShippingProgress = () => {
+    const subtotal = calculateSubtotal();
+    return Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  };
+
   const calculateShipping = () => {
+    const subtotal = calculateSubtotal();
+    if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+      return 0;
+    }
+    
     const baseShipping = cartItems.length > 0 ? 50 : 0;
     const itemCharge = cartItems.reduce((total, item) => total + (item.quantity * 10), 0);
     return baseShipping + itemCharge;
@@ -73,7 +99,7 @@ const Cart = () => {
       });
       return false;
     }
-    
+
     if (!deliveryDetails.mobileNumber) {
       toast({
         title: "Mobile Number Required",
@@ -82,43 +108,43 @@ const Cart = () => {
       });
       return false;
     }
-    
+
     return true;
   };
 
   const handlePayWithUpi = () => {
     if (!validateDeliveryDetails()) return;
-    
+
     setSelectedPaymentMethod("upi");
     setShowQrCode(true);
     setPaymentError(null);
-    
+
     // Set a timer to automatically detect "payment" after 10 seconds for demonstration
     const timeout = window.setTimeout(() => {
       handlePaymentSuccess();
     }, 10000);
-    
+
     setPaymentTimeout(timeout);
   };
-  
+
   const handleBankTransfer = () => {
     if (!validateDeliveryDetails()) return;
-    
+
     setSelectedPaymentMethod("bank");
     setShowQrCode(true);
     setPaymentError(null);
-    
+
     // Set a timer for demonstration
     const timeout = window.setTimeout(() => {
       handlePaymentSuccess();
     }, 10000);
-    
+
     setPaymentTimeout(timeout);
   };
 
   const handleRazorpayPayment = async () => {
     if (!validateDeliveryDetails()) return;
-    
+
     try {
       setPaymentProcessing(true);
       setSelectedPaymentMethod("razorpay");
@@ -139,7 +165,8 @@ const Cart = () => {
           weight: item.weight,
           quantity: item.quantity,
           image: item.image
-        }))
+        })),
+        free_sample: selectedFreeSample
       };
 
       const response = await supabase.functions.invoke('process-order', {
@@ -192,7 +219,7 @@ const Cart = () => {
     try {
       setPaymentProcessing(true);
       setPaymentError(null);
-      
+
       // Skip for Razorpay as the order is already created
       if (paymentMethod === "razorpay" && razorpayOrderData) {
         return;
@@ -212,7 +239,8 @@ const Cart = () => {
           weight: item.weight,
           quantity: item.quantity,
           image: item.image
-        }))
+        })),
+        free_sample: selectedFreeSample
       };
 
       const response = await supabase.functions.invoke('process-order', {
@@ -268,22 +296,22 @@ const Cart = () => {
       clearTimeout(paymentTimeout);
       setPaymentTimeout(null);
     }
-    
+
     // Process the order based on selected payment method
     processOrder(selectedPaymentMethod || "upi");
   };
 
   const handleRazorpaySuccess = () => {
     setPaymentSuccess(true);
-    
+
     toast({
       title: "Payment Successful",
       description: "Your payment with Razorpay has been completed successfully!",
       variant: "default"
     });
-    
+
     clearCart();
-    
+
     // Close dialog and switch to orders tab
     setTimeout(() => {
       setShowQrCode(false);
@@ -295,7 +323,7 @@ const Cart = () => {
 
   const handleRazorpayError = (error: string) => {
     setPaymentError(error || "Payment failed");
-    
+
     toast({
       title: "Payment Failed",
       description: error || "There was an issue with your payment. Please try again.",
@@ -306,14 +334,14 @@ const Cart = () => {
   // Generate dialog title based on payment method
   const getPaymentDialogTitle = () => {
     if (paymentSuccess) return "Payment Complete";
-    
+
     if (selectedPaymentMethod === "upi") return "Scan & Pay with UPI";
     if (selectedPaymentMethod === "bank") return "Bank Transfer Details";
     if (selectedPaymentMethod === "razorpay") return "Razorpay Payment";
-    
+
     return "Payment";
   };
-  
+
   // Generate payment dialog content based on payment method
   const renderPaymentDialogContent = () => {
     if (paymentSuccess) {
@@ -337,7 +365,7 @@ const Cart = () => {
         </div>
       );
     }
-    
+
     if (paymentProcessing) {
       return (
         <div className="text-center py-6">
@@ -346,7 +374,7 @@ const Cart = () => {
         </div>
       );
     }
-    
+
     if (paymentError) {
       return (
         <div className="text-center py-4">
@@ -366,7 +394,7 @@ const Cart = () => {
         </div>
       );
     }
-    
+
     if (selectedPaymentMethod === "upi") {
       return (
         <>
@@ -381,7 +409,7 @@ const Cart = () => {
         </>
       );
     }
-    
+
     if (selectedPaymentMethod === "bank") {
       return (
         <div className="text-center space-y-4">
@@ -403,7 +431,7 @@ const Cart = () => {
         </div>
       );
     }
-    
+
     if (selectedPaymentMethod === "razorpay" && razorpayOrderData) {
       return (
         <div className="text-center space-y-4">
@@ -421,7 +449,7 @@ const Cart = () => {
         </div>
       );
     }
-    
+
     return null;
   };
 
@@ -440,80 +468,168 @@ const Cart = () => {
           
           <TabsContent value="cart">
             {cartItems.length > 0 ? (
-              
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-2/3">
                   {/* Cart items table */}
                   <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Product
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Price
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Quantity
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Subtotal
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {cartItems.map((item) => (
-                          <tr key={item.id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="h-16 w-16 flex-shrink-0">
-                                  <img className="h-16 w-16 rounded object-cover" src={item.image} alt={item.name} />
-                                </div>
-                                <div className="ml-4">
-                                  <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                                  <div className="text-sm text-gray-500">{item.weight}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">₹{item.price.toFixed(2)}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center border border-gray-300 rounded-md">
-                                <button 
-                                  className="px-3 py-1 text-gray-500 hover:text-gray-700"
-                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                >
-                                  -
-                                </button>
-                                <span className="px-3 py-1">{item.quantity}</span>
-                                <button 
-                                  className="px-3 py-1 text-gray-500 hover:text-gray-700"
-                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">₹{(item.price * item.quantity).toFixed(2)}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <button 
-                                className="text-red-600 hover:text-red-900"
-                                onClick={() => removeFromCart(item.id)}
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+  {/* Desktop Table */}
+  <table className="w-full hidden lg:table">
+    <thead className="bg-gray-50 border-b">
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {cartItems.map((item) => (
+        <tr key={item.id}>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <div className="h-16 w-16 flex-shrink-0">
+                <img className="h-16 w-16 rounded object-cover" src={item.image} alt={item.name} />
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                <div className="text-sm text-gray-500">{item.weight}</div>
+              </div>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">₹{item.price.toFixed(2)}</div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <button 
+                className="px-3 py-1 text-gray-500 hover:text-gray-700"
+                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+              >-</button>
+              <span className="px-3 py-1">{item.quantity}</span>
+              <button 
+                className="px-3 py-1 text-gray-500 hover:text-gray-700"
+                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              >+</button>
+            </div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">₹{(item.price * item.quantity).toFixed(2)}</div>
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button 
+              className="text-red-600 hover:text-red-900"
+              onClick={() => removeFromCart(item.id)}
+            >
+              <Trash2 size={18} />
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {/* Mobile Card List */}
+  <div className="lg:hidden space-y-4 p-4">
+    {cartItems.map((item) => (
+      <div key={item.id} className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+        <img src={item.image} alt={item.name} className="h-20 w-20 rounded object-cover flex-shrink-0" />
+        <div className="flex-1">
+          <div className="text-base font-semibold text-gray-900">{item.name}</div>
+          <div className="text-sm text-gray-500 mb-1">{item.weight}</div>
+          <div className="text-sm text-gray-900 mb-1">Price: ₹{item.price.toFixed(2)}</div>
+
+          <div className="flex items-center border border-gray-300 rounded-md max-w-max">
+            <button 
+              className="px-3 py-1 text-gray-500 hover:text-gray-700"
+              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            >-</button>
+            <span className="px-3 py-1">{item.quantity}</span>
+            <button 
+              className="px-3 py-1 text-gray-500 hover:text-gray-700"
+              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            >+</button>
+          </div>
+        </div>
+
+        <div className="text-gray-900 font-medium text-right">
+          ₹{(item.price * item.quantity).toFixed(2)}
+        </div>
+
+        <button 
+          className="text-red-600 hover:text-red-900 self-start sm:self-auto"
+          onClick={() => removeFromCart(item.id)}
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+                  {/* Free Shipping Progress */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm mt-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium text-gray-800">Free Shipping</h3>
+                      {calculateSubtotal() >= FREE_SHIPPING_THRESHOLD ? (
+                        <span className="text-green-600 font-medium">🎉 Hurray! You've unlocked free shipping!</span>
+                      ) : (
+                        <span className="text-gray-600">
+                          Buy ₹{calculateRemainingForFreeShipping()} more to avail Free Shipping
+                        </span>
+                      )}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-primary h-2.5 rounded-full" 
+                        style={{ width: `${calculateShippingProgress()}%` }}
+                      ></div>
+                    </div>
                   </div>
+
+                  {/* Free Sample Selection */}
+<div className="bg-white p-4 rounded-lg shadow-sm mt-4">
+  <h3 className="font-medium text-gray-800 mb-3">Free Sample with Your Order Worth more than ₹169 /-</h3>
+
+  {calculateSubtotal() < 1499 ? (
+    <p className="text-sm text-yellow-600 mb-3">
+      Add ₹{1500 - calculateSubtotal()} more to unlock a free sample with your order.
+    </p>
+  ) : (
+    <p className="text-sm text-gray-600 mb-3">
+      Choose a free pickle sample to taste with your order:
+    </p>
+  )}
+
+  <select
+    className="w-full p-2 border border-gray-300 rounded-md"
+    value={selectedFreeSample || ""}
+    onChange={(e) => {
+      if (calculateSubtotal() >= 1499) {
+        setSelectedFreeSample(e.target.value);
+      }
+    }}
+  >
+    <option value="">Select a free sample...</option>
+    {SAMPLE_PICKLE_OPTIONS.map((pickle) => (
+      <option 
+        key={pickle} 
+        value={pickle} 
+        disabled={calculateSubtotal() < 1499}
+      >
+        {pickle}
+      </option>
+    ))}
+  </select>
+
+  {calculateSubtotal() >= 1499 && selectedFreeSample && (
+    <p className="mt-2 text-sm text-green-600">
+      You've selected <span className="font-medium">{selectedFreeSample}</span> as your free sample!
+    </p>
+  )}
+</div>
+
 
                   <div className="mt-6 flex justify-between">
                     <Link to="/shop">
@@ -634,8 +750,8 @@ const Cart = () => {
                                 </div>
                               </div>
                               <img src="https://razorpay.com/build/browser/static/razorpay-logo-white.934a6e7d.svg" 
-                                   alt="Razorpay" 
-                                   className="h-6 bg-blue-500 p-1 rounded" />
+                                  alt="Razorpay" 
+                                  className="h-6 bg-blue-500 p-1 rounded" />
                             </label>
                           </div>
                         </RadioGroup>
@@ -661,7 +777,7 @@ const Cart = () => {
                           <span>Secure Payment</span>
                         </div>
                         <span>•</span>
-                        <span>100% Money Back Guarantee</span>
+                        <span></span>
                       </div>
                     </div>
 
@@ -706,7 +822,7 @@ const Cart = () => {
           </TabsContent>
         </Tabs>
       </div>
-
+        
       {/* Payment Dialog */}
       <Dialog open={showQrCode} onOpenChange={setShowQrCode}>
         <DialogContent className="sm:max-w-md">

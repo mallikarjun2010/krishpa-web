@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import products from "@/data/products";
@@ -13,12 +12,21 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const { addToCart } = useCart();
+
+  const [product, setProduct] = useState(() =>
+    products.find((p) => p.id === Number(id)) || null
+  );
   const [quantity, setQuantity] = useState(1);
   const [selectedWeight, setSelectedWeight] = useState<string>("");
-  const { addToCart } = useCart();
-  
-  const product = products.find(p => p.id === Number(id));
-  
+
+  useEffect(() => {
+    const foundProduct = products.find((p) => p.id === Number(id)) || null;
+    setProduct(foundProduct);
+    setQuantity(1);
+    setSelectedWeight(foundProduct?.pricing[0]?.weight ?? "");
+  }, [id]);
+
   if (!product) {
     return (
       <Layout>
@@ -30,11 +38,8 @@ const ProductDetail = () => {
     );
   }
 
-  if (!selectedWeight && product.pricing.length > 0) {
-    setSelectedWeight(product.pricing[0].weight);
-  }
-
-  const selectedPricing = product.pricing.find(p => p.weight === selectedWeight) || product.pricing[0];
+  const selectedPricing =
+    product.pricing.find((p) => p.weight === selectedWeight) || product.pricing[0];
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
@@ -43,10 +48,10 @@ const ProductDetail = () => {
         name: product.name,
         price: selectedPricing.price,
         weight: selectedPricing.weight,
-        image: product.image
+        image: product.image,
       });
     }
-    
+
     toast({
       title: "Added to cart",
       description: `${quantity} x ${product.name} (${selectedPricing.weight}) has been added to your cart.`,
@@ -54,7 +59,7 @@ const ProductDetail = () => {
   };
 
   const relatedProducts = products
-    .filter(p => p.id !== product.id)
+    .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
   return (
@@ -63,7 +68,11 @@ const ProductDetail = () => {
         <ProductBreadcrumb category={product.category} productName={product.name} />
 
         <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-sm overflow-hidden">
-          <ProductGallery image={product.image} name={product.name} productId={product.id} />
+          <ProductGallery
+            image={product.image}
+            name={product.name}
+            productId={product.id}
+          />
           <ProductDetails
             name={product.name}
             pricing={product.pricing}
@@ -80,7 +89,7 @@ const ProductDetail = () => {
             onAddToCart={handleAddToCart}
           />
         </div>
-        
+
         <RelatedProducts products={relatedProducts} />
       </div>
     </Layout>

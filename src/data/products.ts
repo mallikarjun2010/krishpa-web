@@ -16,7 +16,7 @@ export interface Product {
   servingSuggestions: string[];
   image: string;
   featured: boolean;
-  category: 'veg' | 'nonveg' | 'combo';
+  category: 'veg' | 'nonveg' | 'combo'|'spices';
 }
 
 const products: Product[] = [
@@ -34,7 +34,7 @@ const products: Product[] = [
     spiceLevel: "Hot",
     shelfLife: "12 months",
     servingSuggestions: ["Mix with hot rice and ghee", "Serve with curd rice", "Pair with dosa or idli"],
-    image: "https://images.unsplash.com/photo-1589216532372-1c2a367900d9",
+    image: "/images/mango.jpg",
     featured: true,
     category: "veg"
   },
@@ -52,7 +52,7 @@ const products: Product[] = [
     spiceLevel: "Medium",
     shelfLife: "12 months",
     servingSuggestions: ["Mix with steamed rice", "Spread on dosa", "Serve with plain paratha"],
-    image: "https://images.unsplash.com/photo-1589556223844-cbfb15a21f26",
+    image: "/images/gonguraa.jpg",
     featured: true,
     category: "veg"
   },
@@ -70,7 +70,7 @@ const products: Product[] = [
     spiceLevel: "Mild",
     shelfLife: "10 months",
     servingSuggestions: ["Pair with chapati or paratha", "Serve with curd rice", "Excellent with plain dosa"],
-    image: "https://images.unsplash.com/photo-1582372685645-d53659ee6203",
+    image: "/images/tomato.jpg",
     featured: true,
     category: "veg"
   },
@@ -88,7 +88,7 @@ const products: Product[] = [
     spiceLevel: "Medium",
     shelfLife: "18 months",
     servingSuggestions: ["Perfect with biryani", "Great with rice and dal", "Enjoyable with plain yogurt"],
-    image: "https://images.unsplash.com/photo-1621607152860-3f3bf6b1d2a9",
+    image: "/images/lemon.jpg",
     featured: true,
     category: "veg"
   },
@@ -106,7 +106,7 @@ const products: Product[] = [
     spiceLevel: "Extra Hot",
     shelfLife: "12 months",
     servingSuggestions: ["Use sparingly with plain rice", "Mix with yogurt rice", "Add to sandwiches for heat"],
-    image: "https://images.unsplash.com/photo-1583119022894-919a68a3d0e3",
+    image: "/images/pandu mirchi.jpg",
     featured: false,
     category: "veg"
   },
@@ -124,7 +124,7 @@ const products: Product[] = [
     spiceLevel: "Mild",
     shelfLife: "12 months",
     servingSuggestions: ["Great with plain rice", "Perfect with South Indian breakfast items", "Pair with rotis"],
-    image: "https://images.unsplash.com/photo-1563649634806-624cd1e63fc9",
+    image: "/images/fish.jpg",
     featured: false,
     category: "veg"
   },
@@ -142,7 +142,7 @@ const products: Product[] = [
     spiceLevel: "Hot",
     shelfLife: "6 months",
     servingSuggestions: ["Perfect with plain rice", "Great with parathas", "Enjoy with dosa"],
-    image: "https://images.unsplash.com/photo-1574484284002-952d92456975",
+    image: "/images/chicken.jpg",
     featured: true,
     category: "nonveg"
   },
@@ -160,7 +160,7 @@ const products: Product[] = [
     spiceLevel: "Hot",
     shelfLife: "6 months",
     servingSuggestions: ["Mix with steamed rice", "Great with rotis or parathas", "Perfect as a sandwich filling"],
-    image: "https://images.unsplash.com/photo-1580217729415-08d9fe8d5438",
+    image: "/images/chicken.jpg",
     featured: false,
     category: "nonveg"
   },
@@ -178,7 +178,7 @@ const products: Product[] = [
     spiceLevel: "Hot",
     shelfLife: "6 months",
     servingSuggestions: ["Perfect with plain rice and ghee", "Excellent with hot parathas", "Enjoy with dosa or idli"],
-    image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143",
+    image: "/images/mutton.jpg",
     featured: true,
     category: "nonveg"
   },
@@ -196,7 +196,7 @@ const products: Product[] = [
     spiceLevel: "Extra Hot",
     shelfLife: "6 months",
     servingSuggestions: ["Mix with hot steamed rice", "Perfect with rotis or naan", "Great as a side with biryani"],
-    image: "https://images.unsplash.com/photo-1664288036226-29fd284eb555",
+    image: "/images/mutton boneless.jpg",
     featured: false,
     category: "nonveg"
   },
@@ -214,7 +214,7 @@ const products: Product[] = [
     spiceLevel: "Medium",
     shelfLife: "4 months",
     servingSuggestions: ["Excellent with steamed rice", "Great with dosa or idli", "Perfect as a side with pulao"],
-    image: "https://images.unsplash.com/photo-1608500218890-c4914cf4d7c0",
+    image: "/images/prawns.jpg",
     featured: false,
     category: "nonveg"
   },
@@ -232,12 +232,13 @@ const products: Product[] = [
     spiceLevel: "Medium",
     shelfLife: "4 months",
     servingSuggestions: ["Perfect with plain rice", "Great with rotis or parathas", "Enjoy with dosa or idli"],
-    image: "https://images.unsplash.com/photo-1501435764075-903868ebb179",
+     image: "/images/fish.jpg",
     featured: true,
     category: "nonveg"
   },
+
   {
-    id: 13,
+    id: 15,
     name: "Veg & Non-Veg Combo Pack",
     pricing: [
       { weight: "500g (4 x 125g)", price: 499 },
@@ -249,10 +250,50 @@ const products: Product[] = [
     spiceLevel: "Medium",
     shelfLife: "6 months",
     servingSuggestions: ["Perfect for family meals", "Great for picnics and gatherings", "Ideal as a gift"],
-    image: "https://images.unsplash.com/photo-1567606855340-df87e6a35b5e",
+    image: "/images/fish.jpg",
     featured: true,
     category: "combo"
-  }
+  },
+  
+  {
+  id: 13,
+  name: "Mirchi Powder",
+  pricing: [
+    { weight: "100g", price: 120 },
+    { weight: "250g", price: 280 },
+    { weight: "500g", price: 520 }
+  ],
+  description: "Natural red chili powder made from sun-dried, hand-picked red chilies.",
+  longDescription: "Our Mirchi Powder is made from carefully selected, sun-dried red chilies that are ground fresh to retain their natural heat and flavor. No additives or preservatives are used, making it a pure and natural spice to enhance your dishes with authentic taste and aroma.",
+  ingredients: ["Sun-dried Red Chilies"],
+  spiceLevel: "Hot",
+  shelfLife: "12 months",
+  servingSuggestions: ["Use in curries and gravies", "Add to chutneys", "Sprinkle on snacks for extra spice"],
+  image: "/images/mirchi 3.jpg",
+  featured: false,
+  category: "spices"
+},
+{
+  id: 14,
+  name: "Turmeric Powder",
+  pricing: [
+    { weight: "100g", price: 100 },
+    { weight: "250g", price: 230 },
+    { weight: "500g", price: 430 }
+  ],
+  description: "Pure and natural turmeric powder with vibrant color and earthy aroma.",
+  longDescription: "Our Turmeric Powder is made from high-quality turmeric roots that are carefully cleaned, dried, and ground into a fine powder. It is completely natural without any additives, perfect for adding color, flavor, and health benefits to your cooking and daily routine.",
+  ingredients: ["Natural Turmeric Root"],
+  spiceLevel: "Mild",
+  shelfLife: "12 months",
+  servingSuggestions: ["Essential for curries and dals", "Use in golden milk", "Great for marinades and pickles"],
+  image: "/images/turmeric.jpg",
+  featured: false,
+  category: "spices"
+},
+
+
+ 
 ];
 
 export default products;

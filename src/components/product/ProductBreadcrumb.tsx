@@ -11,6 +11,7 @@ const ProductBreadcrumb = ({ category, productName }: ProductBreadcrumbProps) =>
     switch (category) {
       case 'veg': return 'Vegetarian';
       case 'nonveg': return 'Non-Vegetarian';
+      case 'spices': return 'Spices'
       default: return 'Combo Packs';
     }
   };

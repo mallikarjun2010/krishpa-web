@@ -1,9 +1,20 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/CartContext";
 import { type ProductPricing } from "@/data/products";
@@ -16,125 +27,154 @@ interface ProductCardProps {
   image: string;
 }
 
-const ProductCard = ({ id, name, pricing, description, image }: ProductCardProps) => {
+const ProductCard = ({
+  id,
+  name,
+  pricing,
+  description,
+  image,
+}: ProductCardProps) => {
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [selectedWeight, setSelectedWeight] = useState<string>(pricing[0].weight);
+  const navigate = useNavigate();
+
+  const [selectedWeight, setSelectedWeight] = useState<string>("");
   const [isHovered, setIsHovered] = useState(false);
-  
-  // Function to get product-specific images
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const getProductImages = (productId: number, mainImage: string) => {
     const baseImages = [mainImage];
-    
-    // Add product-specific secondary images based on product ID
-    switch(productId) {
-      case 1: // Avakaya Pickle
-        baseImages.push(
-          "https://images.unsplash.com/photo-1498936178812-4b2e558d2937",
-          "https://images.unsplash.com/photo-1608500218890-c4914cf4d7c0"
-        );
+    switch (productId) {
+      case 1:
+        baseImages.push("/altimg/mango.jpg");
         break;
-      case 2: // Gongura Pickle
+      case 2:
         baseImages.push(
           "https://images.unsplash.com/photo-1439886183900-e79ec0057170",
           "https://images.unsplash.com/photo-1721322800607-8c38375eef04"
         );
         break;
-      case 3: // Tomato Pickle
+      case 3:
         baseImages.push(
           "https://images.unsplash.com/photo-1485833077593-4278bba3f11f",
           "https://images.unsplash.com/photo-1438565434616-3ef039228b15"
         );
         break;
-      case 4: // Lemon Pickle
+      case 4:
         baseImages.push(
           "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac",
           "https://images.unsplash.com/photo-1441057206919-63d19fac2369"
         );
         break;
-      case 5: // Green Chili Pickle
+      case 5:
         baseImages.push(
           "https://images.unsplash.com/photo-1501286353178-1ec881214838",
           "https://images.unsplash.com/photo-1469041797191-50ace28483c3"
         );
         break;
-      case 6: // Tamarind Pickle
+      case 6:
         baseImages.push(
           "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2",
           "https://images.unsplash.com/photo-1487252665478-49b61b47f302"
         );
         break;
-      case 7: // Chicken Pickle
+      case 7:
         baseImages.push(
           "https://images.unsplash.com/photo-1574484284002-952d92456975",
           "https://images.unsplash.com/photo-1603360946369-dc9bb6258143"
         );
         break;
-      case 8: // Boneless Chicken Pickle
+      case 8:
         baseImages.push(
           "https://images.unsplash.com/photo-1580217729415-08d9fe8d5438",
           "https://images.unsplash.com/photo-1664288036226-29fd284eb555"
         );
         break;
       default:
-        // For products without specific images, use generic ones
         baseImages.push(
           "https://images.unsplash.com/photo-1582562124811-c09040d0a901",
           "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1"
         );
     }
-    
     return baseImages;
   };
-  
-  const images = getProductImages(id, image);
-  
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Image carousel interval that only runs when hovered
+  const images = getProductImages(id, image);
+
   useEffect(() => {
     let interval: number | null = null;
-    
     if (isHovered) {
       interval = window.setInterval(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 1000); // Faster rotation when hovering
+      }, 1000);
     }
-    
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [isHovered, images.length]);
 
-  const selectedPricing = pricing.find(p => p.weight === selectedWeight) || pricing[0];
+  const selectedPricing =
+    pricing.find((p) => p.weight === selectedWeight) || null;
 
   const handleAddToCart = () => {
-    addToCart({ 
-      id, 
-      name, 
-      price: selectedPricing.price,
+    if (!selectedWeight) {
+      toast({
+        title: "Please select a weight",
+        description: "Choose a weight before adding to cart.",
+      });
+      return;
+    }
+
+    addToCart({
+      id,
+      name,
+      price: selectedPricing!.price,
       weight: selectedWeight,
-      image 
+      image,
     });
-    
+
     toast({
       title: "Added to cart",
       description: `${name} (${selectedWeight}) has been added to your cart.`,
     });
   };
 
+  const handleBuyNow = () => {
+    if (!selectedWeight) {
+      toast({
+        title: "Please select a weight",
+        description: "Choose a weight before proceeding to buy.",
+      });
+      return;
+    }
+
+    addToCart({
+      id,
+      name,
+      price: selectedPricing!.price,
+      weight: selectedWeight,
+      image,
+    });
+
+    navigate("/cart");
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <Card 
+    <Card
       className="overflow-hidden transition-all duration-300 bg-white hover:shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
-        setCurrentImageIndex(0); // Reset to main image when not hovering
+        setCurrentImageIndex(0);
       }}
     >
       <CardHeader className="p-0">
-        <Link to={`/product/${id}`}>
-          <div className="relative w-full h-48 overflow-hidden">
+        <Link to={`/product/${id}`} onClick={scrollToTop}>
+          <div className="relative w-full aspect-square overflow-hidden">
             {images.map((img, index) => (
               <img
                 key={index}
@@ -145,15 +185,24 @@ const ProductCard = ({ id, name, pricing, description, image }: ProductCardProps
                 } ${isHovered ? "scale-110" : "scale-100"}`}
               />
             ))}
-            <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-              isHovered ? "opacity-20" : "opacity-0"
-            }`}></div>
+            <div
+              className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+                isHovered ? "opacity-20" : "opacity-0"
+              }`}
+            ></div>
           </div>
         </Link>
       </CardHeader>
-      <CardContent className={`p-4 transition-all duration-300 ${isHovered ? "bg-gray-50" : ""}`}>
-        <Link to={`/product/${id}`}>
-          <CardTitle className="font-playfair mb-2 text-primary hover:text-primary/80">{name}</CardTitle>
+
+      <CardContent
+        className={`p-4 transition-all duration-300 ${
+          isHovered ? "bg-gray-50" : ""
+        }`}
+      >
+        <Link to={`/product/${id}`} onClick={scrollToTop}>
+          <CardTitle className="font-playfair mb-2 text-primary hover:text-primary/80">
+            {name}
+          </CardTitle>
         </Link>
         <p className="text-sm text-gray-600 mb-4">{description}</p>
         <div className="flex justify-between items-center gap-4">
@@ -171,21 +220,29 @@ const ProductCard = ({ id, name, pricing, description, image }: ProductCardProps
               </SelectContent>
             </Select>
           </div>
-          <p className="font-bold text-primary whitespace-nowrap">₹{selectedPricing.price}</p>
+          <p className="font-bold text-primary whitespace-nowrap">
+            ₹{selectedPricing?.price ?? "--"}
+          </p>
         </div>
       </CardContent>
-      <CardFooter className={`flex gap-2 transition-all duration-300 ${isHovered ? "bg-gray-50" : ""}`}>
-        <Button 
+
+      <CardFooter
+        className={`flex gap-2 transition-all duration-300 ${
+          isHovered ? "bg-gray-50" : ""
+        }`}
+      >
+        <Button
           className="w-full bg-[#8b4513] hover:bg-[#8b4513]/90 transition-all duration-300"
           onClick={handleAddToCart}
         >
           Add to Cart
         </Button>
-        <Link to={`/product/${id}`} className="w-full">
-          <Button className="w-full bg-[#8b4513] hover:bg-[#8b4513]/90 transition-all duration-300">
-            Buy Now
-          </Button>
-        </Link>
+        <Button
+          className="w-full bg-[#8b4513] hover:bg-[#8b4513]/90 transition-all duration-300"
+          onClick={handleBuyNow}
+        >
+          Buy Now
+        </Button>
       </CardFooter>
     </Card>
   );

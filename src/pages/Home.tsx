@@ -11,6 +11,7 @@ import testimonials, { fetchTestimonials, editTestimonial, deleteTestimonial } f
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { UtensilsCrossed, ChefHat, Sprout } from "lucide-react";
 
 const Home = () => {
   const featuredProducts = products.filter(product => product.featured);
@@ -95,15 +96,77 @@ const Home = () => {
             </div>
           </div>
           <div className="md:w-1/2">
-            <img src="https://images.unsplash.com/photo-1589216532372-1c2a367900d9" alt="Assorted pickles in jars" className="rounded-lg shadow-lg w-full h-auto object-cover" />
+            <img src="/images/home.jpg" alt="Assorted pickles in jars" className="rounded-lg shadow-lg w-full h-auto object-cover" />
           </div>
         </div>
         <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-amber-50/80 to-transparent"></div>
       </section>
+      
+      
 
-      {/* Categories Section */}
-      <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
+      
+     <section className="bg-gradient-to-b from-[#fff9f3] to-white py-24">
+  <div className="container mx-auto px-4">
+    <h2 className="text-2xl md:text-4xl font-playfair font-bold text-primary text-center mb-4">
+      Our Promise to You
+    </h2>
+    <p className="text-lg text-gray-600 text-center mb-16 max-w-2xl mx-auto leading-relaxed">
+      Every jar from Krishpa carries our heart. We make it the way our mothers did — clean, honest, and full of flavor.
+    </p>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      {/* Authentic Telugu Taste */}
+      <div className="bg-white/60 backdrop-blur-md border border-yellow-100 rounded-3xl p-10 shadow-2xl hover:scale-105 transition-transform duration-300">
+        <div className="flex justify-center mb-6">
+          <div className="bg-yellow-100 p-5 rounded-full shadow-lg">
+            <UtensilsCrossed size={44} strokeWidth={1.5} className="text-[#9c4221]" />
+          </div>
+        </div>
+        <h3 className="text-2xl font-playfair font-semibold text-primary text-center mb-4">
+          Authentic Telugu Taste
+        </h3>
+        <p className="text-gray-700 text-center text-[16px] leading-relaxed">
+          Passed down through generations, our pickles capture the soul of Andhra-Telangana kitchens with no shortcuts.
+        </p>
+      </div>
+
+      {/* Homemade & Hygienic */}
+      <div className="bg-white/60 backdrop-blur-md border border-green-100 rounded-3xl p-10 shadow-2xl hover:scale-105 transition-transform duration-300">
+        <div className="flex justify-center mb-6">
+          <div className="bg-green-100 p-5 rounded-full shadow-lg">
+            <ChefHat size={44} strokeWidth={1.5} className="text-[#276749]" />
+          </div>
+        </div>
+        <h3 className="text-2xl font-playfair font-semibold text-green-700 text-center mb-4">
+          Homemade & Hygienic
+        </h3>
+        <p className="text-gray-700 text-center text-[16px] leading-relaxed">
+          We prepare everything at home with clean hands, clean hearts, and a lot of love — just like family should.
+        </p>
+      </div>
+
+      {/* No Preservatives */}
+      <div className="bg-white/60 backdrop-blur-md border border-yellow-100 rounded-3xl p-10 shadow-2xl hover:scale-105 transition-transform duration-300">
+        <div className="flex justify-center mb-6">
+          <div className="bg-yellow-100 p-5 rounded-full shadow-lg">
+            <Sprout size={44} strokeWidth={1.5} className="text-[#b7791f]" />
+          </div>
+        </div>
+        <h3 className="text-2xl font-playfair font-semibold text-yellow-700 text-center mb-4">
+          No Preservatives
+        </h3>
+        <p className="text-gray-700 text-center text-[16px] leading-relaxed">
+          No chemicals, no shortcuts. Only nature’s own ingredients — oil, spices, and tradition.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+        
+        {/* Categories Section */}
+      <section className="bg-[#fff8f1] py-16">
+        <div className="container mx-auto px-8">
           <h2 className="font-playfair text-3xl font-bold text-primary mb-2 text-center">
             Browse by Category
           </h2>
@@ -111,28 +174,6 @@ const Home = () => {
             Explore our diverse collection of handcrafted pickles
           </p>
           <Categories />
-        </div>
-      </section>
-
-      {/* About Brief Section */}
-      <section className="bg-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="font-playfair text-3xl font-bold text-primary mb-6">
-              Our Pickle Heritage
-            </h2>
-            <p className="text-gray-700 mb-8">
-              Krishpa Homemade Pickles began in a small kitchen in Vijayawada, where our founder's
-              grandmother perfected recipes that have been treasured for generations. 
-              Today, we continue this legacy using the same traditional methods, handpicking 
-              ingredients, and crafting each batch with care and love.
-            </p>
-            <Link to="/about">
-              <Button variant="link" className="text-primary">
-                Read Our Full Story →
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 

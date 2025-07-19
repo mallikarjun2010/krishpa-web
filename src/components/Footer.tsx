@@ -21,7 +21,7 @@ const Footer = () => {
               <a href="https://x.com/krishpafoods?t=DJZgt1mLRZ1QE-P301sJKQ&s=08" target="_blank" rel="noopener noreferrer" aria-label="Twitter (formerly X)" className="text-white hover:text-amber-200">
                 <Twitter size={20} />
               </a>
-              <a href="https://www.youtube.com/@krishpahomemadepickles" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-white hover:text-amber-200">
+              <a href="https://www.youtube.com/@krishpafoods" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-white hover:text-amber-200">
                 <Youtube size={20} />
               </a>
             </div>

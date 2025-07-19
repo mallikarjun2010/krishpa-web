@@ -116,7 +116,7 @@ const Contact = () => {
               </div>
               <div className="mt-6">
                 <a 
-                  href="https://wa.me/919876543210?text=Hello%2C%20I%20have%20a%20query%20about%20ordering%20and%20payment%20for%20Krishpa%20pickles." 
+                  href="https://wa.me/919347445411?text=Hello%2C%20I%20have%20a%20query%20about%20ordering%20and%20payment%20for%20Krishpa%20pickles." 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors"
